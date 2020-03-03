@@ -1,0 +1,25 @@
+name: Check Dependencies
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  check-language-servers:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+        - salesforcedx-vscode-lwc
+        - salesforcedx-vscode-lightning
+    steps:
+    - uses: actions/checkout@master
+    
+    - name: update-dependencies
+      uses: bpbuch/update-dependencies@master
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repo: ${{ github.repository }}
+        packagePath: packages/${{ matrix.package }}/package.json
+        branchPrefix: ${{ matrix.package }}
+        include: '@salesforce/lwc-language-server,@salesforce/aura-language-server,@salesforce/lightning-lsp-common'
